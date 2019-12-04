@@ -1,0 +1,45 @@
+- name: enable ip forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Ensure SELinux is set to enforcing mode
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: SELINUX=permissive
+
+- name: check if swap is disabled
+  shell: 'swapon --show'
+  register: swap_check
+  changed_when: false
+
+- name: disable swap
+  shell: 'swapoff -a'
+  when: swap_check.stdout != ""
+
+- name: disable swap via fstab
+  replace:
+    dest: /etc/fstab
+    regexp: '^\/dev\/mapper\/centos-swap'
+    replace: '#\/dev\/mapper\/centos-swap'
+
+- name: install docker
+  yum:
+    name: docker
+    state: latest
+
+- name: enable and start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: disable firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no

@@ -1,0 +1,9 @@
+- name: copy kubernetes repo file over
+  copy:
+    src: ../files/kube.repo
+    dest: /etc/yum.repos.d/kube.repo
+
+- name: install kubeadm
+  yum:
+    name: kubeadm
+    state: latest

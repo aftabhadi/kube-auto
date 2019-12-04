@@ -1,0 +1,22 @@
+- hosts: nodes
+  become: yes
+  tasks:
+  - name: kube prereqs
+    include_role:
+      name: kube-auto
+      tasks_from: prereq_kube.yml
+
+  - name: install kubeadm
+    include_role: 
+      name: kube-auto
+      tasks_from: install_kubeadm.yml
+
+#- hosts: masters
+#  become: yes
+#  tasks:
+#  - name: prereqs / install kubernetes on master
+#    include_role:
+#      name: kube-auto
+#      tasks_from: prereq_kube_masters.yml
+
+# TODO: task to join nodes to cluster
